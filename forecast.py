@@ -23,15 +23,29 @@ def get_weather(city: str, open_weather_token: str) -> dict:
     sunrise = weather.sunrise_time("date")
     sunset = weather.sunset_time("date")
 
-    observed_weather['status'] = weather.status
-    observed_weather['temperature'] = weather.temperature("celsius")['temp']
-    observed_weather['humidity'] = weather.humidity
-    observed_weather['pressure'] = round(weather.barometric_pressure("inHg")['press'] * INCH_TO_MM_CONSTANT, 1)
-    observed_weather['wind_speed'] = weather.wind()["speed"]
-    observed_weather['clouds'] = weather.clouds
-    observed_weather['rain'] = weather.rain.get("1h", "No data")
-    observed_weather['sunrise'] = str(dt.time(sunrise.astimezone(USER_TIMEZONE)))
-    observed_weather['sunset'] = str(dt.time(sunset.astimezone(USER_TIMEZONE)))
+    weather_status_dict = {"Thunderstorm": "\U000026C8",
+                           "Clear": "\U00002600",
+                           "Rain": "\U0001F327",
+                           "Snow": "\U00002744",
+                           "Mist": "\U0001F32B",
+                           "Fog": "\U0001F32B",
+                           "Clouds": "\U00002601"}
+
+    observed_weather["current date"] = dt.strftime(dt.now(), "%d/%m/%y %H:%M")
+    if weather.status in weather_status_dict:
+        weather_icon = weather_status_dict.get(weather.status)
+        observed_weather['status'] = f"{weather_icon}{weather.status}"
+    else:
+        observed_weather['status'] = "I do not understand what is going on!\nJust look to the window!"
+    observed_weather['temperature\U0001F321'] = f"{weather.temperature('celsius').get('temp')}°C"
+    observed_weather['humidity\U0001F4A7'] = f"{weather.humidity}%"
+    observed_weather['pressure'] = \
+        f"{round(weather.barometric_pressure('inHg').get('press') * INCH_TO_MM_CONSTANT, 1)} mm.Hg"
+    observed_weather['wind speed\U0001F32C'] = weather.wind().get("speed")
+    observed_weather['clouds\U00002601'] = f"{weather.clouds}%"
+    observed_weather['rain\U0001F328'] = f"{weather.rain.get('1h', ' ')} mm"
+    observed_weather['sunrise\U0001F305'] = str(dt.time(sunrise.astimezone(USER_TIMEZONE)))
+    observed_weather['sunset\U0001F307'] = str(dt.time(sunset.astimezone(USER_TIMEZONE)))
     return observed_weather
 
 
